@@ -1,0 +1,163 @@
+######################### NAT GATEWAY STEPS OF CREATION #############################
+
+1 - allocate elastic ip
+
+2 - create nat gateway
+
+3 - create private route tables and associate subnets
+
+4 - How Reference a Terraform Module
+
+5 - Use Terraform Module to Create the Nat Gateways
+
+6 - Push Code to the GitHub Repository
+
+
+################################### MAIN.TF ##########################################
+
+
+ 1 - Allocate elastic ip. this eip will be used for the nat-gateway in the public subnet az1 
+
+
+ 2 - Allocate elastic ip. this eip will be used for the nat-gateway in the public subnet az2
+
+
+ 3 - Create nat gateway in public subnet az1
+
+	- To ensure proper ordering, it is recommended to add an explicit dependency
+
+
+ 4 - Create nat gateway in public subnet az2
+
+	- To ensure proper ordering, it is recommended to add an explicit dependency
+  
+	  on the internet gateway for the vpc.
+
+
+ 5 -  Create private route table az1 and add route through nat gateway az1
+
+
+ 6 - Associate private app subnet az1 with private route table az1
+
+
+ 7 - Associate private data subnet az1 with private route table az1
+
+
+ 8 - Create private route table az2 and add route through nat gateway az2
+
+
+ 9 - Associate private app subnet az2 with private route table az2
+
+
+10 - Associate private data subnet az2 with private route table az2 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

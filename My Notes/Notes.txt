@@ -1,0 +1,276 @@
+################## BUILD A 3 TIER AWS NETWORK VPC WITH TERRAFORM ##################################
+
+                    ***		***		***		***       ***
+
+                         ***		***		***		***
+
+                               ***		***		***
+                                    ***		***
+                                        ***
+
+
+1 - Create a directory called Module and inside that create vpc directory
+
+2 - Create 3 files inside the vpc directory:
+
+	main.tf 	  : Contains the configuration code
+
+	variable.tf : Contains all the variable needed for this project
+
+	output.tf   : Contains the values we want to reference in another module
+
+
+3 - Create a directory called Jupiter-website-ecs where you create 3 files:
+
+	backend.tf		: Contains the code to store the Sate File into a remote storage (S3)
+
+	main.tf			: Contains the provider's (AWS) initialisation and the code to create the VPC with modules
+
+	terraform.tfvars	: Contains the Values of the variables
+
+	variables.tf		: Contains all the variables
+
+
+
+############################# MODULES/VPC VARIABLES.TF ##########################################
+
+                              ***		***		***
+                                   ***		***
+                                        ***
+
+1 - Variables to be created :
+
+	region
+	
+	project_name	
+
+	vpc_cidr	public_subnet_az1_cidr
+
+	public_subnet_az2_cidr
+
+	private_app_subnet_az1_cidr
+
+	private_app_subnet_az2_cidr
+
+	private_data_subnet_az1_cidr
+
+	private_data_subnet_az2_cidr
+
+	
+
+################################### MODULES/VPC MAIN.TF ################################################
+								 
+                                       ***       ***
+                                            ***
+
+ 1 - Create vpc
+
+	resource "aws_vpc"
+
+
+ 2 - Create internet gateway and attach it to vpc
+
+	resource "aws_internet_gateway"
+
+
+ 3 - Use data source to get all avalablility zones in region
+
+	data "aws_availability_zones" "available_zones" {}
+
+	This code will create a list of all the availability zones in the  specified region
+
+
+ 4 - Create public subnet az1
+
+	resource "aws_subnet"
+
+
+ 5 - Create public subnet az2
+
+	resource "aws_subnet"
+
+
+ 6 - Create route table and add public route
+
+	resource "aws_route_table"
+
+
+ 7 - Associate public subnet az1 to "public route table"
+
+	resource "aws_route_table_association"
+
+
+ 8 - Associate public subnet az2 to "public route table"
+
+	resource "aws_route_table_association"
+
+
+ 9 - Create private app subnet az1
+
+	resource "aws_subnet"
+
+
+10 - Create private app subnet az2
+
+	resource "aws_subnet"
+
+
+11 - Create private data subnet az1
+
+	resource "aws_subnet"
+
+
+12 - Create private data subnet az2
+
+	resource "aws_subnet" 
+
+
+############################### OUTPUT.TF ACTIVITIES ##########################################
+
+                              ***		***		***
+                                   ***		***
+                                        ***
+
+Allows to export values from the VPC and reference those values (as an input) when creating other resources.
+
+output "region" {
+
+  value = var.region
+
+}
+
+output "project_name" {
+
+  value = var.project_name
+
+}
+
+output "vpc_id" {
+
+  value = aws_vpc.vpc.id
+
+}
+
+output "public_subnet_az1_id" {
+
+  value = aws_subnet.public_subnet_az1.id
+
+}
+
+output "public_subnet_az2_id" {
+
+  value = aws_subnet.public_subnet_az2.id
+
+}
+
+output "private_app_subnet_az1_id" {
+
+  value = aws_subnet.private_app_subnet_az1.id
+
+}
+
+output "private_app_subnet_az2_id" {
+
+  value = aws_subnet.private_app_subnet_az2.id
+
+}
+
+output "private_data_subnet_az1_id" {
+
+  value = aws_subnet.private_data_subnet_az1.id
+
+}
+
+output "private_data_subnet_az2_id" {
+
+  value = aws_subnet.private_data_subnet_az2.id
+
+}
+
+output "internet_gateway" {
+
+  value = aws_internet_gateway.internet_gateway.id
+
+}
+
+
+############################### JUPITER / BACKEND.TF ################################################
+
+                               ***		***		***
+                                    ***		***
+                                        ***
+
+# store the terraform state file in s3
+
+terraform {
+
+  backend "s3" {
+
+    bucket    = "jupiter-website-2118"
+
+    key       = "Jupiter-website-ecs.tfstate"
+
+    region    = "us-east-1"
+
+    profile   = "terraform-user"
+
+  }
+
+}
+
+############################### JUPITER / MAIN.TF ################################################
+
+                               ***		***	   ***
+                                    ***	    ***
+                                        ***
+This is the main configuration file. It contains the code that will initialize the providers AWS.
+
+It also contains the code that calls all the variables using the source module: "../modules/vpc".
+
+# Configure AWS provider
+provider "aws" {
+  region    = var.region
+  profile   = "terraform-user"
+}
+
+# Create VPC
+module "vpc" {
+  source                        = "../modules/vpc"
+  region                        = var.region
+  project_name                  = var.project_name
+  vpc_cidr                      = var.vpc_cidr
+  public_subnet_az1_cidr        = var.public_subnet_az1_cidr
+  public_subnet_az2_cidr        = var.public_subnet_az2_cidr
+  private_app_subnet_az1_cidr   = var.private_app_subnet_az1_cidr
+  private_app_subnet_az2_cidr   = var.private_app_subnet_az2_cidr
+  private_data_subnet_az1_cidr  = var.private_data_subnet_az1_cidr
+  private_data_subnet_az2_cidr  = var.private_data_subnet_az2_cidr
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
